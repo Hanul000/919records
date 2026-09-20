@@ -409,20 +409,17 @@ export default function Home() {
       try {
         let session = readSession(item.file);
         if (!session) {
-          const initResponse = await fetch(
-            "https://919records.guuoul000.workers.dev/api/upload/initiate",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                accessCode,
-                uploaderName,
-                originalName: item.file.name,
-                mimeType: item.file.type || "application/octet-stream",
-                sizeBytes: item.file.size,
-              }),
-            },
-          );
+          const initResponse = await fetch("/api/upload/initiate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              accessCode,
+              uploaderName,
+              originalName: item.file.name,
+              mimeType: item.file.type || "application/octet-stream",
+              sizeBytes: item.file.size,
+            }),
+          });
           const data = await serverJson<{
             uploadId: string;
             sessionUrl: string;
@@ -444,18 +441,15 @@ export default function Home() {
         )) as { id?: string };
 
         await serverJson(
-          await fetch(
-            "https://919records.guuoul000.workers.dev/api/upload/complete",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                accessCode,
-                uploadId: session.uploadId,
-                fileId: driveFile.id ?? null,
-              }),
-            },
-          ),
+          await fetch("/api/upload/complete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              accessCode,
+              uploadId: session.uploadId,
+              fileId: driveFile.id ?? null,
+            }),
+          }),
         );
 
         clearSession(item.file);
@@ -549,7 +543,7 @@ export default function Home() {
       <div className="mx-auto max-w-[760px]">
         <header className="mb-9 flex items-center gap-3">
           <a
-            href="https://919records.guuoul000.workers.dev/api/archive/open"
+            href="/api/archive/open"
             target="_blank"
             rel="noreferrer"
             className="inline-flex h-11 items-center gap-2 rounded-none bg-[#db6f31] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#c75d28] focus:outline-none focus:ring-4 focus:ring-[#fbe8dc]"
