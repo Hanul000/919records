@@ -1,0 +1,71 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../vendor/shadcn-tailwind-4.13.0.css";
+
+:root {
+  --background: #fff8f4;
+  --foreground: #32190e;
+  --card: #ffffff;
+  --card-foreground: #32190e;
+  --popover: #ffffff;
+  --popover-foreground: #32190e;
+  --primary: #db6f31;
+  --primary-foreground: #ffffff;
+  --secondary: #fbe8dc;
+  --secondary-foreground: #79320f;
+  --muted: #f9eee8;
+  --muted-foreground: #74594d;
+  --accent: #fdf0e8;
+  --accent-foreground: #79320f;
+  --destructive: #b42318;
+  --border: #ecd6c8;
+  --input: #dfbfae;
+  --ring: #db6f31;
+  --radius: 0.75rem;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-sans);
+}
+
+* { box-sizing: border-box; }
+html { background: var(--background); }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: -0.05em;
+}
+
+.font-medium,
+.font-semibold,
+.font-bold {
+  letter-spacing: -0.05em;
+}
+button, input { font: inherit; }
