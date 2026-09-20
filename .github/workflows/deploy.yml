@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # 최신 노드 버전 강제 지정
+          node-version: lts/* # 최신 노드 버전 강제 지정
 
       - name: Install Dependencies
         run: npm install
