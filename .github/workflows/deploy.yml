@@ -29,4 +29,4 @@ jobs:
           folder: dist # 빌드된 정적 파일 폴더
           repository-name: hanul000/919records # 내 도메인 저장소 경로
           branch: main
-          token: ${{ secrets.GH_PAT }}# 깃허브 인증 토큰
+          token: ${{ secrets.GITHUB_TOKEN }}# 깃허브 인증 토큰
