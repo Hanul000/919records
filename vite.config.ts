@@ -4,8 +4,10 @@ import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 
-const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
-  "8c39b417-9717-4232-aa03-ee69bdd0659d";
+// Keep production deployments attached to the archive database. This must
+// match the database bound to the Worker, otherwise a Git deploy can silently
+// point the site back to an unused database.
+const ARCHIVE_DATABASE_ID = "3426d070-9408-4238-aacb-1afd26a06567";
 
 const { d1, r2 } = hostingConfig;
 
@@ -20,8 +22,8 @@ const localBindingConfig = {
     ? [
         {
           binding: d1,
-          database_name: "site-creator-d1",
-          database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
+          database_name: "919records-upload",
+          database_id: ARCHIVE_DATABASE_ID,
         },
       ]
     : [],
