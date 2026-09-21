@@ -36,6 +36,14 @@ function required(name: keyof Cloudflare.Env) {
   return value;
 }
 
+function archiveFolderId() {
+  const folderId = required("GOOGLE_ARCHIVE_FOLDER_ID").trim();
+  if (!/^[A-Za-z0-9_-]{10,}$/.test(folderId)) {
+    throw new Error("기록물 보관함 폴더 설정이 올바르지 않습니다.");
+  }
+  return folderId;
+}
+
 export function isUploadCodeValid(candidate: unknown) {
   if (typeof candidate !== "string") return false;
   const expected = env.UPLOAD_ACCESS_CODE;
@@ -125,34 +133,6 @@ async function driveJson<T>(url: string, init: RequestInit) {
   return data;
 }
 
-async function createArchiveFolder(accessToken: string) {
-  const file = await driveJson<DriveFile>("https://www.googleapis.com/drive/v3/files?fields=id", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: "919-최종-업로드",
-      mimeType: "application/vnd.google-apps.folder",
-    }),
-  });
-  if (!file.id) throw new Error("기록물 폴더를 만들지 못했습니다.");
-  const permission = await fetch(
-    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}/permissions?sendNotificationEmail=false`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ type: "anyone", role: "reader", allowFileDiscovery: false }),
-    },
-  );
-  if (!permission.ok) throw new Error("보관함 열람 권한을 설정하지 못했습니다.");
-  return file.id;
-}
-
 function escapeDriveQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
@@ -209,7 +189,10 @@ export async function connectGoogleDrive(code: string, redirectUri: string) {
     throw new Error("Google Drive 권한을 저장하지 못했습니다. 다시 연결해 주세요.");
   }
 
-  const folderId = await createArchiveFolder(token.access_token);
+  // The archive folder is deliberately configured once in Cloudflare rather
+  // than created during OAuth setup. Reauthorizing Google only refreshes the
+  // credential and cannot replace the production archive with a new folder.
+  const folderId = archiveFolderId();
   if (!env.DB) throw new Error("업로드 저장소를 사용할 수 없습니다.");
   await env.DB
     .prepare(
