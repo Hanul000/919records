@@ -52,6 +52,7 @@ type ResumeSettings = {
 };
 
 const CHUNK_SIZE = 32 * 1024 * 1024;
+const MAX_CONCURRENT_UPLOADS = 2;
 const SESSION_PREFIX = "919-upload-session:";
 const RESUME_SETTINGS_KEY = "919-upload-settings";
 const RESUME_DATABASE = "919-upload-resume";
@@ -401,9 +402,10 @@ export default function Home() {
     setNotice(null);
     saveResumeSettings({ name: uploaderName, accessCode });
     let hadError = false;
+    const pendingItems = items.filter((item) => item.state !== "complete");
+    let nextItemIndex = 0;
 
-    for (const item of items) {
-      if (item.state === "complete") continue;
+    async function uploadItem(item: UploadItem) {
       updateItem(item.id, { state: "uploading", message: "업로드 준비 중…" });
 
       try {
@@ -461,15 +463,25 @@ export default function Home() {
           uploadedBytes: item.file.size,
           message: "Drive에 저장됨",
         });
+        return false;
       } catch (error) {
-        hadError = true;
         const message =
           error instanceof Error
             ? error.message
             : "업로드를 완료하지 못했습니다.";
         updateItem(item.id, { state: "error", message });
+        return true;
       }
     }
+
+    await Promise.all(
+      Array.from({ length: Math.min(MAX_CONCURRENT_UPLOADS, pendingItems.length) }, async () => {
+        while (nextItemIndex < pendingItems.length) {
+          const item = pendingItems[nextItemIndex++];
+          if (await uploadItem(item)) hadError = true;
+        }
+      }),
+    );
 
     if (!hadError) clearResumeSettings();
     setIsSending(false);
